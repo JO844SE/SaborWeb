@@ -1,0 +1,28 @@
+{% extends 'App/base.html' %}
+{% block content %}
+<h1 class="mt-4">Categorías</h1>
+<div class="mb-3 py-3">
+    <a href="" class="btn btn-success"><i class="fas fa-plus"></i> Agregar Categoría</a>
+</div>
+<table class="table table-striped responsive ">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for categoria in categorias %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ categoria.name }}</td>
+            <td>
+                <a href="" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                <a href="" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
