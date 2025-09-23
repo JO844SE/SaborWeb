@@ -3,8 +3,8 @@ from .models import *
 
 # Create your views here.
 def home(request):
-    categoria = Category.objects.all().all()
-    producto = Product.objects.all().all()
+    categoria = Category.objects.all()
+    producto = Product.objects.all()
     return render(request, 'index.html', {'producto': producto, 'categoria': categoria})
 
 def contact(request):
@@ -17,18 +17,29 @@ def app(request):
     return render(request, 'App/base.html')
 
 def dashboard(request):
-    return render(request, 'App/dashboard.html')
+    categoria = Category.objects.count()
+    producto = Product.objects.count()
+    return render(request, 'App/dashboard.html', {'categoria': categoria, 'producto': producto})
 
 
 def productosList(request):
     productos = Product.objects.all()
     return render(request, 'App/productos.html', {'productos': productos})
 
+def productDelete(request, id):
+    producto = Product.objects.get(id=id)
+    producto.delete()
+    return redirect('productos')
+
 
 def categoriaList(request):
     categorias = Category.objects.all()
     return render(request, 'App/categorias.html', {'categorias': categorias})
 
+def categoriaDelete(request, id):
+    categoria = Category.objects.get(id=id)
+    categoria.delete()
+    return redirect('categoriaList')
 
 
 def loginview(request):
