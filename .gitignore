@@ -1,0 +1,33 @@
+# Archivos de compilación de Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Archivos temporales de entorno virtual
+venv/
+env/
+ENV/
+*.venv/
+*.env
+
+# Archivos de configuración/local
+*.sqlite3
+db.sqlite3
+.env
+
+# Archivos de logs
+*.log
+
+# Archivos de migraciones automáticas (opcional, si no quieres rastrear todas)
+*/migrations/__pycache__/
+*/migrations/*.pyc
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de IDEs
+.vscode/
+.idea/
+*.swp
