@@ -14,6 +14,7 @@
     {% load static %}
     <!-- Css Styles -->
 
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}" type="text/css">
@@ -45,7 +46,7 @@
   <div class="container-fluid">
     <a class="navbar-brand" href="#"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+      <span class="navbar-toggler-icon" ></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
@@ -118,22 +119,21 @@
                     </div>
                 </div>
             </div>
-            <div class="cf-filter" id="category-filter">
+                        <div class="cf-filter" id="category-filter">
                 {% for prod in producto %}
                     <div class="cf-item mix all {{ prod.category.name|slugify }}">
                         <div class="cf-item-pic">
-                            <img src="{{ prod.image}}" alt="">
+                            <img src="{{ prod.image }}" alt="{{ prod.name }}" class="img-fluid" onerror="this.src='{% static 'img/default-product.svg' %}'">
                         </div>
                         <div class="cf-item-text">
                             <h4>{{ prod.name }}</h4>
-                            <h6>{{ prod.name }}</h6>
-                            <h6>{{ prod.price }}</h6>
+                            <h6>{{ prod.description}}</h6>
+                            <h5 style="color: #00be0aff;">{{ prod.price }}</h5>
                         </div>
 
 
                     </div>
                 {% endfor %}
-            </div>
         </div>
     </div>
     <!-- Categories Filter Section End -->
@@ -184,7 +184,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script>
 
 {% endblock %}
    
-
+    
     <!-- Js Plugins -->
 
     <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>

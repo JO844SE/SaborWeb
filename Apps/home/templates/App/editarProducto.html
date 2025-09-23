@@ -1,0 +1,181 @@
+{% extends './base.html' %}
+{% block content %}
+  <h1 class="mt-4">Actualizar Producto</h1>
+  
+  <!-- Mensajes de Django -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  
+  
+  <div class="mb-3 py-3">
+    <div class="body show border p-4 rounded-3 shadow-sm border-primary">
+      <form method="POST" action="{% url 'editarProducto' %}">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{ producto.id }}">
+
+        <!-- Campo Nombre -->
+        <div class="mb-3">
+          <label for="nombre" class="form-label fw-bold">Nombre</label>
+          <input type="text" class="form-control border-primary" value="{{ producto.name }}" id="nombre" name="nombre" placeholder="Nombre del producto" required />
+        </div>
+
+        <!-- Campo Descripción -->
+        <div class="mb-3">
+          <label for="descripcion" class="form-label fw-bold">Descripción</label>
+          <textarea class="form-control border-primary" id="descripcion" name="descripcion" rows="3" placeholder="Describe brevemente este producto..." required>{{ producto.description }}</textarea>
+        </div>
+
+        <!-- Campo Precio -->
+        <div class="mb-3">
+          <label for="precio" class="form-label fw-bold">Precio</label>
+          <input type="number" 
+                 step="0.01" 
+                 class="form-control border-primary" 
+                 value="{{ producto.price }}" 
+                 id="precio" 
+                 name="precio" 
+                 placeholder="Precio del producto" 
+                 required />
+          <div class="form-text">Precio actual: Q{{ producto.price|floatformat:2 }}</div>
+        </div>
+
+        <!-- Campo Imagen (URL) -->
+        <div class="mb-3">
+          <label for="imagen" class="form-label fw-bold">Imagen (URL)</label>
+          <input type="url" class="form-control border-primary" value="{{ producto.image }}" id="imagen" name="imagen" placeholder="https://ejemplo.com/imagen.jpg" required />
+          <div class="form-text">Proporciona la URL completa de la imagen del producto.</div>
+          
+          <!-- Preview de la imagen -->
+          <div id="imagePreview" class="mt-3" style="display: {% if producto.image %}block{% else %}none{% endif %};">
+            <label class="form-label fw-bold">Vista previa:</label>
+            <div class="border rounded p-2 text-center bg-light">
+              <img id="preview" src="{{ producto.image }}" alt="Vista previa" class="img-fluid" style="max-height: 200px; border-radius: 8px;">
+            </div>
+          </div>
+        </div>
+
+        <!-- Campo Categoría -->
+        <div class="mb-3">
+          <label for="categoria" class="form-label fw-bold">Categoría</label>
+          <select class="form-select border-primary" id="categoria" name="categoria" required>
+            <option value="" disabled selected>Selecciona una categoría</option>
+            {% for categoria in categorias %}
+              <option value="{{ categoria.id }}" {% if categoria.id == producto.category.id %}selected{% endif %}>{{ categoria.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button type="button" class="btn btn-outline-secondary" onclick="history.back()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Actualizar Producto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<!-- JavaScript para funcionalidades adicionales -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imagenInput = document.getElementById('imagen');
+    const imagePreview = document.getElementById('imagePreview');
+    const preview = document.getElementById('preview');
+    const form = document.querySelector('form');
+    
+    // Preview de imagen desde URL
+    imagenInput.addEventListener('input', function(e) {
+        const url = e.target.value.trim();
+        
+        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+            // Mostrar vista previa
+            preview.src = url;
+            preview.onload = function() {
+                imagePreview.style.display = 'block';
+                imagenInput.classList.remove('is-invalid');
+                imagenInput.classList.add('is-valid');
+            };
+            preview.onerror = function() {
+                imagePreview.style.display = 'none';
+                imagenInput.classList.remove('is-valid');
+                imagenInput.classList.add('is-invalid');
+            };
+        } else if (url.length > 0) {
+            imagePreview.style.display = 'none';
+            imagenInput.classList.remove('is-valid');
+            imagenInput.classList.add('is-invalid');
+        } else {
+            imagePreview.style.display = 'none';
+            imagenInput.classList.remove('is-valid', 'is-invalid');
+        }
+    });
+    
+    // Validación de formulario
+    form.addEventListener('submit', function(e) {
+        const precio = document.getElementById('precio').value;
+        const categoria = document.getElementById('categoria').value;
+        const imagen = document.getElementById('imagen').value.trim();
+        
+        // Validar precio
+        if (precio <= 0) {
+            e.preventDefault();
+            alert('El precio debe ser mayor que 0');
+            document.getElementById('precio').focus();
+            return;
+        }
+        
+        // Validar categoría
+        if (!categoria) {
+            e.preventDefault();
+            alert('Por favor, selecciona una categoría');
+            document.getElementById('categoria').focus();
+            return;
+        }
+        
+        // Validar URL de imagen
+        if (!imagen || (!imagen.startsWith('http://') && !imagen.startsWith('https://'))) {
+            e.preventDefault();
+            alert('Por favor, ingresa una URL válida para la imagen');
+            document.getElementById('imagen').focus();
+            return;
+        }
+    });
+});
+</script>
+
+<!-- Estilos adicionales -->
+<style>
+.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.is-valid {
+    border-color: #198754 !important;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25) !important;
+}
+
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+.alert-success {
+    background-color: #d1f2eb;
+    color: #0f5132;
+    border-left: 4px solid #198754;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends './base.html' %}
+{% block content %}
+  <h1 class="mt-4">Registrar Categoría</h1>
+  <div class="mb-3 py-3">
+    <div class="body show border p-4 rounded-3 shadow-sm border-primary">
+      <form method="POST" action="{% url 'registrarCategoria' %}">
+        {% csrf_token %}
+
+        <!-- Campo Nombre -->
+        <div class="mb-3">
+          <label for="nombre" class="form-label fw-bold">Nombre</label>
+          <input type="text" class="form-control border-primary" id="nombre" name="nombre" placeholder="Nombre de la categoría" required />
+        </div>
+
+        <!-- Campo Descripción -->
+        <div class="mb-3">
+          <label for="descripcion" class="form-label fw-bold">Descripción</label>
+          <textarea class="form-control border-primary" id="descripcion" name="descripcion" rows="3" placeholder="Describe brevemente esta categoría..." required></textarea>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button type="button" class="btn btn-outline-secondary" onclick="history.back()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Categoría</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
