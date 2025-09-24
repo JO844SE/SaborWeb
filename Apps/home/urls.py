@@ -6,7 +6,6 @@ urlpatterns = [
    path('contact/', contact, name='contact'),
    path('login/', login, name='login'),
    path('loginview/', loginview, name='loginview'),
-   path('app/', app, name='app'),
    path('logout/', logout, name='logout'),
    path('dashboard/', dashboard, name='dashboard'),
 
@@ -31,4 +30,15 @@ urlpatterns = [
    path('selectEdicioncategoria/<int:id>/', selectEdicioncategoria, name='selectEdicioncategoria'),
    path('editarCategoria/', editarCategoria, name='editarCategoria'),
    path('categoriaDelete/<int:id>/', categoriaDelete, name='categoriaDelete'),
+
+
+
+   #-------------------------------
+   # Rutas para Usuarios
+   #-------------------------------
+   path('registrarusuario/', registrarusuario, name='registrarusuario'),
+   path('listUser/', listUser, name='listUser'),
+   path('selectEdicionUser/<int:id>/', selectEdicionUser, name='selectEdicionUser'),
+   path('editUser/', editUser, name='editUser'),
+   path('deleteUser/<int:id>/', deleteUser, name='deleteUser')
 ]

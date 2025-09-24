@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.db import IntegrityError
 from .models import *
+import bcrypt
+
 
 # Create your views here.
 def home(request):
@@ -15,9 +16,6 @@ def contact(request):
 def login(request):
     return render(request, 'login.html')
 
-def app(request):
-    return render(request, 'App/base.html')
-
 def dashboard(request):
     categoria = Category.objects.count()
     producto = Product.objects.count()
@@ -27,14 +25,17 @@ def dashboard(request):
 #-------------------------------
 # Vistas para productos
 #-------------------------------
+
 def productosList(request):
     productos = Product.objects.all()
     return render(request, 'App/productos.html', {'productos': productos})
+
 
 def productDelete(request, id):
     producto = Product.objects.get(id=id)
     producto.delete()
     return redirect('productos')
+
 
 def registrarProducto(request):
     # Obtener todas las categorías para el formulario (tanto GET como POST)
@@ -44,7 +45,7 @@ def registrarProducto(request):
         nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')
         precio = request.POST.get('precio')
-        imagen_url = request.POST.get('imagen')  # Ahora es una URL
+        imagen_url = request.POST.get('imagen')  # es una URL
         categoria_id = request.POST.get('categoria')
 
         # Validar que todos los campos requeridos estén presentes
@@ -109,14 +110,17 @@ def registrarProducto(request):
                 'categoria_id': categoria_id
             })
     
-    # GET request - mostrar formulario
+    # mostrar formulario
     return render(request, 'App/registrarProducto.html', {'categorias': categorias})
+
 
 
 def selectEdicionProducto(request, id):
     producto = Product.objects.get(id=id)
     categorias = Category.objects.all()
     return render(request, 'App/editarProducto.html', {'producto': producto, 'categorias': categorias})
+
+
 
 def editarProducto(request):
     if request.method == 'POST':
@@ -171,6 +175,7 @@ def editarProducto(request):
 #-------------------------------
 # Vistas para categorías
 #-------------------------------
+
 def registrarCategoria(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
@@ -184,6 +189,7 @@ def registrarCategoria(request):
     return render(request, 'App/registrarCategoria.html')
 
 
+
 def categoriaList(request):
     categorias = Category.objects.all()
     return render(request, 'App/categorias.html', {'categorias': categorias})
@@ -191,6 +197,7 @@ def categoriaList(request):
 def selectEdicioncategoria(request, id):
     categoria = Category.objects.get(id=id)
     return render(request, 'App/editarCategoria.html', {'categoria': categoria})
+
 
 def editarCategoria(request):
     if request.method == 'POST':
@@ -212,6 +219,74 @@ def categoriaDelete(request, id):
     return redirect('categoriaList')
 
 
+#-------------------------------
+# Vistas de usuario
+#-------------------------------
+
+def registrarusuario(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        correo = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # Convertimos la contraseña a bytes (bcrypt trabaja con bytes
+        passwordHash = password.encode('utf-8')
+        # Generamos un "salt" (valor aleatorio para reforzar el hash)
+        salt = bcrypt.gensalt()
+        # Hasheamos la contraseña
+        hashed = bcrypt.hashpw(passwordHash, salt)
+
+        usuario = User.objects.create(
+            username = nombre,
+            email = correo,
+            password = hashed.decode('utf-8') #guardar como string en la DB
+        ) 
+        return redirect('listUser')
+    return render(request, 'App/registrarUsuarios.html' )
+
+
+
+def listUser(request):
+    usuario = User.objects.all()
+    return render(request, 'App/usuarios.html', {'usuario': usuario })
+
+
+def selectEdicionUser(request, id):
+    usuario = User.objects.get(id=id)
+    return render(request, 'App/editarusuarios.html', {'usuario': usuario} )
+
+
+def editUser(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        nombre = request.POST.get('nombre')
+        correo = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # Convertimos la contraseña a bytes (bcrypt trabaja con bytes
+        passwordHash = password.encode('utf-8')
+        # Generamos un "salt" (valor aleatorio para reforzar el hash)
+        salt = bcrypt.gensalt()
+        # Hasheamos la contraseña
+        hashed = bcrypt.hashpw(passwordHash, salt)
+
+        user = User.objects.get(id=id)
+        user.username = nombre
+        user.email = correo
+        user.password = hashed.decode('utf-8')
+        user.save()
+
+        return redirect('listUser')
+    return render(request, 'App/editarusuarios.html')
+
+
+
+def deleteUser(request, id):
+    id = User.objects.get(id=id)
+    id.delete()
+    return redirect('listUser')
+
+
 
 
 
@@ -223,12 +298,19 @@ def loginview(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        usuario = User.objects.filter(email= email, password=password).first()
+
+        usuario = User.objects.filter(email=email).first()
         if usuario:
-            #autenticacion exitosa
-            request.session['user_id'] = usuario.id
-            request.session['user_authenticated'] = True
-            return redirect('dashboard')
+            # Hash guardado en la base de datos (es string, lo convertimos a bytes)
+            hashed = usuario.password.encode('utf-8')
+            #verificamos contraseña ingresada vrs hash
+            if bcrypt.checkpw(password.encode('utf-8'), hashed):
+                #autenticacion exitosa
+                request.session['user_id'] = usuario.id
+                request.session['user_authenticated'] = True
+                return redirect('dashboard')
+            else:
+                return render(request, 'login.html', {'error': 'Credenciales invalidas'})
         else:
             return render(request, 'login.html', {'error': 'Credenciales invalidas'})
     else:
