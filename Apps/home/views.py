@@ -1,7 +1,54 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from functools import wraps
 from .models import *
 import bcrypt
+
+#-------------------------------
+# Sistema de Autenticación Personalizado
+#-------------------------------
+
+def is_authenticated(request):
+    """
+    Verifica si el usuario está autenticado basándose en la sesión
+    """
+    return 'user_id' in request.session and request.session['user_id'] is not None
+
+def login_required_custom(login_url='/login/'):
+    """
+    Decorador personalizado que verifica si el usuario está autenticado
+    Si no está autenticado, redirige al login
+    """
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if is_authenticated(request):
+                return view_func(request, *args, **kwargs)
+            else:
+                storage = messages.get_messages(request)
+                storage.used = True
+                messages.warning(request, "Debes iniciar sesión para acceder a esta página")
+                return redirect(login_url)
+        return _wrapped_view
+    return decorator
+
+def get_authenticated_user(request):
+    """
+    Obtiene el usuario autenticado de la sesión
+    Retorna el objeto User o None si no está autenticado
+    """
+    if is_authenticated(request):
+        try:
+            user_id = request.session['user_id']
+            return User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            # Si el usuario no existe, limpiar la sesión
+            if 'user_id' in request.session:
+                del request.session['user_id']
+    return None
 
 
 # Create your views here.
@@ -16,10 +63,16 @@ def contact(request):
 def login(request):
     return render(request, 'login.html')
 
+@login_required_custom()
 def dashboard(request):
     categoria = Category.objects.count()
     producto = Product.objects.count()
-    return render(request, 'App/dashboard.html', {'categoria': categoria, 'producto': producto})
+    user = get_authenticated_user(request)
+    return render(request, 'App/dashboard.html', {
+        'categoria': categoria, 
+        'producto': producto,
+        'user': user
+    })
 
 
 #-------------------------------
@@ -294,27 +347,38 @@ def deleteUser(request, id):
 # Vistas para autenticación
 #-------------------------------
 def loginview(request):
+    # Si ya está autenticado, redirigir al dashboard
+    if is_authenticated(request):
+        return redirect('dashboard')
+    
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
 
+        # Validar campos vacíos
+        if not email or not password:
+            messages.error(request, 'Por favor, ingrese email y contraseña')
+            return render(request, 'login.html')
 
-        usuario = User.objects.filter(email=email).first()
-        if usuario:
-            # Hash guardado en la base de datos (es string, lo convertimos a bytes)
-            hashed = usuario.password.encode('utf-8')
-            #verificamos contraseña ingresada vrs hash
-            if bcrypt.checkpw(password.encode('utf-8'), hashed):
-                #autenticacion exitosa
-                request.session['user_id'] = usuario.id
-                request.session['user_authenticated'] = True
-                return redirect('dashboard')
+        try:
+            usuario = User.objects.filter(email=email).first()
+            if usuario:
+                # Hash guardado en la base de datos (es string, lo convertimos a bytes)
+                hashed = usuario.password.encode('utf-8')
+                # Verificamos contraseña ingresada vs hash
+                if bcrypt.checkpw(password.encode('utf-8'), hashed):
+                    # Autenticación exitosa
+                    request.session['user_id'] = usuario.id
+                    messages.success(request, f'Bienvenido {usuario.username}!')
+                    return redirect('dashboard')
+                else:
+                    messages.error(request, 'Email o contraseña incorrectos')
             else:
-                return render(request, 'login.html', {'error': 'Credenciales invalidas'})
-        else:
-            return render(request, 'login.html', {'error': 'Credenciales invalidas'})
-    else:
-        return render(request, 'login.html')
+                messages.error(request, 'Email o contraseña incorrectos')
+        except Exception as e:
+            messages.error(request, 'Error en el sistema de autenticación')
+    
+    return render(request, 'login.html')
 
 
 def logout(request):
