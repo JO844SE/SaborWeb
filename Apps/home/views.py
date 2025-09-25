@@ -1,8 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 from functools import wraps
 from .models import *
 import bcrypt
@@ -60,36 +58,30 @@ def home(request):
 def contact(request):
     return render(request, 'contact.html')
 
-def login(request):
-    return render(request, 'login.html')
 
 @login_required_custom()
 def dashboard(request):
     categoria = Category.objects.count()
     producto = Product.objects.count()
-    user = get_authenticated_user(request)
     return render(request, 'App/dashboard.html', {
         'categoria': categoria, 
         'producto': producto,
-        'user': user
     })
-
-
 #-------------------------------
 # Vistas para productos
 #-------------------------------
-
+@login_required_custom()
 def productosList(request):
     productos = Product.objects.all()
     return render(request, 'App/productos.html', {'productos': productos})
 
-
+@login_required_custom()
 def productDelete(request, id):
     producto = Product.objects.get(id=id)
     producto.delete()
     return redirect('productos')
 
-
+@login_required_custom()
 def registrarProducto(request):
     # Obtener todas las categorías para el formulario (tanto GET como POST)
     categorias = Category.objects.all()
@@ -167,14 +159,14 @@ def registrarProducto(request):
     return render(request, 'App/registrarProducto.html', {'categorias': categorias})
 
 
-
+@login_required_custom()
 def selectEdicionProducto(request, id):
     producto = Product.objects.get(id=id)
     categorias = Category.objects.all()
     return render(request, 'App/editarProducto.html', {'producto': producto, 'categorias': categorias})
 
 
-
+@login_required_custom()
 def editarProducto(request):
     if request.method == 'POST':
         id = request.POST.get('id')
@@ -228,7 +220,7 @@ def editarProducto(request):
 #-------------------------------
 # Vistas para categorías
 #-------------------------------
-
+@login_required_custom()
 def registrarCategoria(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
@@ -242,16 +234,17 @@ def registrarCategoria(request):
     return render(request, 'App/registrarCategoria.html')
 
 
-
+@login_required_custom()
 def categoriaList(request):
     categorias = Category.objects.all()
     return render(request, 'App/categorias.html', {'categorias': categorias})
 
+@login_required_custom()
 def selectEdicioncategoria(request, id):
     categoria = Category.objects.get(id=id)
     return render(request, 'App/editarCategoria.html', {'categoria': categoria})
 
-
+@login_required_custom()
 def editarCategoria(request):
     if request.method == 'POST':
         id = request.POST.get('id')
@@ -265,7 +258,7 @@ def editarCategoria(request):
         return redirect('categoriaList')
     return render(request, 'App/editarCategoria.html')
 
-
+@login_required_custom()
 def categoriaDelete(request, id):
     categoria = Category.objects.get(id=id)
     categoria.delete()
@@ -275,7 +268,7 @@ def categoriaDelete(request, id):
 #-------------------------------
 # Vistas de usuario
 #-------------------------------
-
+@login_required_custom()
 def registrarusuario(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
@@ -298,17 +291,17 @@ def registrarusuario(request):
     return render(request, 'App/registrarUsuarios.html' )
 
 
-
+@login_required_custom()
 def listUser(request):
     usuario = User.objects.all()
     return render(request, 'App/usuarios.html', {'usuario': usuario })
 
-
+@login_required_custom()
 def selectEdicionUser(request, id):
     usuario = User.objects.get(id=id)
     return render(request, 'App/editarusuarios.html', {'usuario': usuario} )
 
-
+@login_required_custom()
 def editUser(request):
     if request.method == 'POST':
         id = request.POST.get('id')
@@ -333,7 +326,7 @@ def editUser(request):
     return render(request, 'App/editarusuarios.html')
 
 
-
+@login_required_custom()
 def deleteUser(request, id):
     id = User.objects.get(id=id)
     id.delete()
@@ -346,7 +339,7 @@ def deleteUser(request, id):
 #-------------------------------
 # Vistas para autenticación
 #-------------------------------
-def loginview(request):
+def login(request):
     # Si ya está autenticado, redirigir al dashboard
     if is_authenticated(request):
         return redirect('dashboard')
@@ -369,7 +362,6 @@ def loginview(request):
                 if bcrypt.checkpw(password.encode('utf-8'), hashed):
                     # Autenticación exitosa
                     request.session['user_id'] = usuario.id
-                    messages.success(request, f'Bienvenido {usuario.username}!')
                     return redirect('dashboard')
                 else:
                     messages.error(request, 'Email o contraseña incorrectos')
@@ -381,6 +373,7 @@ def loginview(request):
     return render(request, 'login.html')
 
 
+@login_required_custom()
 def logout(request):
     request.session.flush()
     return redirect('home')
