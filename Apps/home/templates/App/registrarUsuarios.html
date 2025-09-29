@@ -6,20 +6,26 @@
       <form method="POST" action="{% url 'registrarusuario' %}">
         {% csrf_token %}
 
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
         <!-- Campo Nombre -->
         <div class="mb-3">
           <label for="nombre" class="form-label fw-bold">Nombre</label>
-          <input type="text" class="form-control border-primary" id="nombre" name="nombre" placeholder="Nombre de la categoría" required />
+          <input type="text" class="form-control border-primary" value="{{ nombre }}" id="nombre" name="nombre" placeholder="Nombre de la categoría" required />
         </div>
 
          <div class="mb-3">
           <label for="nombre" class="form-label fw-bold">Correo electrónico</label>
-          <input type="email" class="form-control border-primary" id="email" name="email" placeholder="Ingresa tu correo" required />
+          <input type="email" class="form-control border-primary" value="{{ email }}" id="email" name="email" placeholder="Ingresa tu correo" required />
         </div>
 
          <div class="mb-3">
           <label for="password" class="form-label fw-bold">Contraseña</label>
-          <input type="password" class="form-control border-primary" id="password" name="password" placeholder="Ingresa tu" required />
+          <input type="password" class="form-control border-primary" value="{{ password }}" id="password" name="password" placeholder="Ingresa tu contraseña" required />
         </div>
 
         <!-- Botones -->

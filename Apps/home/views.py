@@ -109,10 +109,21 @@ def registrarProducto(request):
             # Validar precio
             precio_decimal = float(precio)
             if precio_decimal <= 0:
-                raise ValueError("El precio debe ser mayor que 0")
+                messages.error(request, "El precio debe ser mayor que 0")
 
             # Validar que la categoría existe
             categoria = Category.objects.get(id=categoria_id)
+
+            if Product.objects.filter(name=nombre).exists():
+                messages.error(request, f"Ya existe un producto -> ({nombre}) selecciona otro nombre")
+                return render(request, 'App/registrarProducto.html', {
+                    'categorias': categorias,
+                    'nombre': nombre,
+                    'descripcion': descripcion,
+                    'precio': precio,
+                    'imagen': imagen_url,
+                    'categoria_id': categoria_id
+                })
 
 
             # Crear el producto con la URL de imagen
@@ -168,6 +179,8 @@ def selectEdicionProducto(request, id):
 
 @login_required_custom()
 def editarProducto(request):
+    categorias = Category.objects.all()
+    productos = Product.objects.all()
     if request.method == 'POST':
         id = request.POST.get('id')
         nombre = request.POST.get('nombre')
@@ -188,6 +201,11 @@ def editarProducto(request):
             # Validar URL de imagen
             if not imagen_url.startswith(('http://', 'https://')):
                 raise ValueError("La URL de la imagen debe comenzar con http:// o https://")
+
+            if Product.objects.filter(name=nombre).exclude(id=id).exists():
+                messages.error(request, f"Ya existe un producto -> ({nombre}) selecciona otro nombre")
+                producto = Product.objects.get(id=id)  # Obtener el producto actual
+                return render(request, 'App/editarProducto.html', {'producto': producto, 'categorias': categorias})
 
             # Actualizar el producto
             producto = Product.objects.get(id=id)
@@ -226,6 +244,13 @@ def registrarCategoria(request):
         nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')
 
+        if Category.objects.filter(name=nombre).exists():
+            messages.error(request, f'Ya existe una categoría -> ({nombre}) selecciona otro nombre')
+            return render(request, 'App/registrarCategoria.html', {
+                'nombre': nombre,
+                'descripcion': descripcion
+            })
+
         categoria = Category.objects.create(
             name=nombre,
             description=descripcion
@@ -250,6 +275,11 @@ def editarCategoria(request):
         id = request.POST.get('id')
         nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')
+
+        if Category.objects.filter(name=nombre).exclude(id=id).exists():
+            messages.error(request, f'Ya existe una categoría -> ({nombre}) selecciona otro nombre')
+            categoria = Category.objects.get(id=id)  # Obtener la categoría actual
+            return render(request, 'App/editarCategoria.html', {'categoria': categoria})
 
         categoria = Category.objects.get(id=id)
         categoria.name = nombre
@@ -281,6 +311,16 @@ def registrarusuario(request):
         salt = bcrypt.gensalt()
         # Hasheamos la contraseña
         hashed = bcrypt.hashpw(passwordHash, salt)
+
+        if User.objects.filter(email=correo).exists():
+            storage = messages.get_messages(request)
+            storage.used = True
+            messages.error(request, f'Ya existe un usuario con este correo -> ({correo}) selecciona otro correo')
+            return render(request, 'App/registrarUsuarios.html', {
+                'nombre': nombre,
+                'email': correo,
+                'password': password
+            })
 
         usuario = User.objects.create(
             username = nombre,
@@ -315,6 +355,11 @@ def editUser(request):
         salt = bcrypt.gensalt()
         # Hasheamos la contraseña
         hashed = bcrypt.hashpw(passwordHash, salt)
+
+        if User.objects.filter(email=correo).exclude(id=id).exists():
+            messages.error(request, f'Ya existe un usuario con este correo -> ({correo}) selecciona otro correo')
+            user = User.objects.get(id=id)  # Obtener el usuario actual
+            return render(request, 'App/editarusuarios.html', {'usuario': user, 'password': password})
 
         user = User.objects.get(id=id)
         user.username = nombre
