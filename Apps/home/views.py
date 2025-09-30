@@ -216,7 +216,7 @@ def editarProducto(request):
             producto.category = categoria
             producto.save()
             
-            messages.success(request, f'El producto "{nombre}" se ha actualizado exitosamente.')
+            #messages.success(request, f'El producto "{nombre}" se ha actualizado exitosamente.')
             return redirect('productos')
             
         except ValueError as e:
