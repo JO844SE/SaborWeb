@@ -78,8 +78,14 @@ def productosList(request):
 @login_required_custom()
 def productDelete(request, id):
     producto = Product.objects.get(id=id)
-    producto.delete()
-    return redirect('productos')
+    if request.method == 'POST':
+        try:
+            producto.delete()
+            return redirect('productos')
+        except Exception as e:
+            messages.error(request, f'Error al eliminar el producto: {str(e)}')
+            return redirect('productos')
+    return render(request, 'App/confirm_delete_product.html', {'producto': producto})
 
 @login_required_custom()
 def registrarProducto(request):
@@ -291,8 +297,14 @@ def editarCategoria(request):
 @login_required_custom()
 def categoriaDelete(request, id):
     categoria = Category.objects.get(id=id)
-    categoria.delete()
-    return redirect('categoriaList')
+    if request.method == 'POST':
+        try:
+            categoria.delete()
+            return redirect('categoriaList')
+        except Exception as e:
+            messages.error(request, f'No se puede eliminar esta categoría porque está relacionada con otros elementos: {str(e)}')
+            return redirect('categoriaList')
+    return render(request, 'App/confirm_delete_category.html', {'categoria': categoria})
 
 
 #-------------------------------
@@ -374,10 +386,14 @@ def editUser(request):
 @login_required_custom()
 def deleteUser(request, id):
     id = User.objects.get(id=id)
-    id.delete()
-    return redirect('listUser')
-
-
+    if request.method == 'POST':
+        try:
+            id.delete()
+            return redirect('listUser')
+        except Exception as e:
+            messages.error(request, f'Error al eliminar el usuario: {str(e)}')
+            return redirect('listUser')
+    return render(request, 'App/confirm_delete_user.html', {'usuario': id})
 
 
 
