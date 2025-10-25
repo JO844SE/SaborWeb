@@ -3,7 +3,7 @@
   <h1 class="mt-4">Editar Usuarios</h1>
   <div class="mb-3 py-3">
     <div class="body show border p-4 rounded-3 shadow-sm border-primary">
-      <form method="POST" action="{% url 'editUser' %}">
+      <form method="POST" action="{% url 'home:editUser' %}">
         {% csrf_token %}
         {% if messages %}
           {% for message in messages %}

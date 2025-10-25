@@ -25,18 +25,9 @@
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            
             <li>
-              <a class="dropdown-item" href="#">
-                <i class="fas fa-user me-2"></i>
-                {% if user %}
-                  {{ user.username }}
-                {% else %}
-                  Invitado
-                {% endif %}
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+              <a class="dropdown-item" href="{% url 'home:logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
             </li>
           </ul>
         </li>
@@ -48,25 +39,25 @@
           <div class="sb-sidenav-menu">
             <div class="nav">
               <div class="sb-sidenav-menu-heading">ADMINISTRACION</div>
-              <a class="nav-link" href="{% url 'listUser' %}">
+              <a class="nav-link" href="{% url 'home:listUser' %}">
                 <div class="sb-nav-link-icon">
                   <i class="fas fa-tags"></i>
                 </div>Usuarios
               </a>
               <div class="sb-sidenav-menu-heading">Complementos</div>
-              <a class="nav-link" href="{% url 'dashboard' %}">
+              <a class="nav-link" href="{% url 'home:dashboard' %}">
                 <div class="sb-nav-link-icon">
                   <i class="fas fa-tachometer-alt"></i>
                 </div>Dashboard
               </a>
 
               <div class="sb-sidenav-menu-heading">PRINCIPALES</div>
-              <a class="nav-link" href="{% url 'categoriaList' %}">
+              <a class="nav-link" href="{% url 'home:categoriaList' %}">
                 <div class="sb-nav-link-icon">
                   <i class="fas fa-tags"></i>
                 </div>Categorías
               </a>
-              <a class="nav-link" href="{% url 'productos' %}">
+              <a class="nav-link" href="{% url 'home:productos' %}">
                 <div class="sb-nav-link-icon">
                   <i class="fas fa-boxes"></i>
                 </div>Productos

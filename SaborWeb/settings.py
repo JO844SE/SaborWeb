@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
 
     'Apps.home',
+    'Apps.Tienda',
 ]
 
 MIDDLEWARE = [
@@ -65,8 +66,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
-                #tu context processor
-                'Apps.home.utils_context.user_context',
+
             ],
         },
     },
@@ -135,3 +135,6 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = 'Tienda:home'  # Redirige a esta URL después del login exitoso
+LOGOUT_REDIRECT_URL = 'Tienda:home'  # Redirige a esta URL después del logout

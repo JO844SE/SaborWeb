@@ -50,10 +50,7 @@ def get_authenticated_user(request):
 
 
 # Create your views here.
-def home(request):
-    categoria = Category.objects.all()
-    producto = Product.objects.all()
-    return render(request, 'index.html', {'producto': producto, 'categoria': categoria})
+
 
 def contact(request):
     return render(request, 'contact.html')
@@ -81,10 +78,10 @@ def productDelete(request, id):
     if request.method == 'POST':
         try:
             producto.delete()
-            return redirect('productos')
+            return redirect('home:productos')
         except Exception as e:
             messages.error(request, f'Error al eliminar el producto: {str(e)}')
-            return redirect('productos')
+            return redirect('home:productos')
     return render(request, 'App/confirm_delete_product.html', {'producto': producto})
 
 @login_required_custom()
@@ -140,7 +137,7 @@ def registrarProducto(request):
                 image=imagen_url,  # Guardar la URL directamente
                 category=categoria
             )
-            return redirect('productos')
+            return redirect('home:productos')
             
         except ValueError as e:
             return render(request, 'App/registrarProducto.html', {
@@ -223,22 +220,22 @@ def editarProducto(request):
             producto.save()
             
             #messages.success(request, f'El producto "{nombre}" se ha actualizado exitosamente.')
-            return redirect('productos')
+            return redirect('home:productos')
             
         except ValueError as e:
             messages.error(request, str(e))
-            return redirect('selectEdicionProducto', id=id)
+            return redirect('home:selectEdicionProducto', id=id)
         except Category.DoesNotExist:
             messages.error(request, 'La categoría seleccionada no existe.')
-            return redirect('selectEdicionProducto', id=id)
+            return redirect('home:selectEdicionProducto', id=id)
         except Product.DoesNotExist:
             messages.error(request, 'El producto no existe.')
-            return redirect('productos')
+            return redirect('home:productos')
         except Exception as e:
             messages.error(request, f'Error al actualizar el producto: {str(e)}')
-            return redirect('selectEdicionProducto', id=id)
-    
-    return redirect('productos')
+            return redirect('home:selectEdicionProducto', id=id)
+
+    return redirect('home:productos')
 
 
 #-------------------------------
@@ -261,7 +258,7 @@ def registrarCategoria(request):
             name=nombre,
             description=descripcion
         )
-        return redirect('categoriaList')
+        return redirect('home:categoriaList')
     return render(request, 'App/registrarCategoria.html')
 
 
@@ -291,7 +288,7 @@ def editarCategoria(request):
         categoria.name = nombre
         categoria.description = descripcion
         categoria.save()
-        return redirect('categoriaList')
+        return redirect('home:categoriaList')
     return render(request, 'App/editarCategoria.html')
 
 @login_required_custom()
@@ -300,10 +297,10 @@ def categoriaDelete(request, id):
     if request.method == 'POST':
         try:
             categoria.delete()
-            return redirect('categoriaList')
+            return redirect('home:categoriaList')
         except Exception as e:
             messages.error(request, f'No se puede eliminar esta categoría porque está relacionada con otros elementos: {str(e)}')
-            return redirect('categoriaList')
+            return redirect('home:categoriaList')
     return render(request, 'App/confirm_delete_category.html', {'categoria': categoria})
 
 
@@ -339,7 +336,7 @@ def registrarusuario(request):
             email = correo,
             password = hashed.decode('utf-8') #guardar como string en la DB
         ) 
-        return redirect('listUser')
+        return redirect('home:listUser')
     return render(request, 'App/registrarUsuarios.html' )
 
 
@@ -379,7 +376,7 @@ def editUser(request):
         user.password = hashed.decode('utf-8')
         user.save()
 
-        return redirect('listUser')
+        return redirect('home:listUser')
     return render(request, 'App/editarusuarios.html')
 
 
@@ -389,10 +386,10 @@ def deleteUser(request, id):
     if request.method == 'POST':
         try:
             id.delete()
-            return redirect('listUser')
+            return redirect('home:listUser')
         except Exception as e:
             messages.error(request, f'Error al eliminar el usuario: {str(e)}')
-            return redirect('listUser')
+            return redirect('home:listUser')
     return render(request, 'App/confirm_delete_user.html', {'usuario': id})
 
 
@@ -403,7 +400,7 @@ def deleteUser(request, id):
 def login(request):
     # Si ya está autenticado, redirigir al dashboard
     if is_authenticated(request):
-        return redirect('dashboard')
+        return redirect('home:dashboard')
     
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -423,7 +420,7 @@ def login(request):
                 if bcrypt.checkpw(password.encode('utf-8'), hashed):
                     # Autenticación exitosa
                     request.session['user_id'] = usuario.id
-                    return redirect('dashboard')
+                    return redirect('home:dashboard')
                 else:
                     messages.error(request, 'Email o contraseña incorrectos')
             else:
@@ -437,4 +434,4 @@ def login(request):
 @login_required_custom()
 def logout(request):
     request.session.flush()
-    return redirect('home')
+    return redirect('Tienda:home')

@@ -3,7 +3,7 @@
   <h1 class="mt-4">Registrar Producto</h1>
   <div class="mb-3 py-3">
     <div class="body show border p-4 rounded-3 shadow-sm border-primary">
-      <form method="POST" action="{% url 'registrarProducto' %}">
+      <form method="POST" action="{% url 'home:registrarProducto' %}">
         {% csrf_token %}
         {% if messages %}
           <ul>

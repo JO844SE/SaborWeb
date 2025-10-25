@@ -16,7 +16,7 @@
   
   <div class="mb-3 py-3">
     <div class="body show border p-4 rounded-3 shadow-sm border-primary">
-      <form method="POST" action="{% url 'editarProducto' %}">
+      <form method="POST" action="{% url 'home:editarProducto' %}">
         {% csrf_token %}
         <input type="hidden" name="id" value="{{ producto.id }}">
 
