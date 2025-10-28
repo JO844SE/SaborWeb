@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" type="text/css" />
+    <title>Detalle de pedido</title>
+  </head>
+  <body>
+    <div class="container mt-4">
+      <h1 class="mt-4">Detalle del pedido</h1>
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>
+          Detalle
+        </div>
+        <div class="container mt-4">
+          <strong>Nombre Cliente:</strong>
+          <span>{{ order.nombreApellido }}</span>
+          <br />
+          <strong>Telefono:</strong>
+          <span>{{ order.telefono }}</span>
+          <br />
+          <strong>Estado:</strong>
+          <span class="badge 
+                    {% if order.status == 'PENDING' %}bg-warning{% endif %}
+                    {% if order.status == 'PROCESSING' %}bg-info{% endif %}
+                    {% if order.status == 'READY' %}bg-success{% endif %}
+                    {% if order.status == 'DELIVERED' %}bg-secondary{% endif %}">{{ order.status }}</span>
+          <br />
+          <br>
+          <h2>Productos</h2>
+          <br />
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ item.price }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4">No hay productos en este pedido.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <p style="text-indent: 983px;">
+            <strong>Total: {{ order.total }}</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+  </body>
+</html>

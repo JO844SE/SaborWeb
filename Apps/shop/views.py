@@ -91,6 +91,28 @@ def checkout(request):
     username = getattr(request.user, 'username', None)
     email = getattr(request.user, 'email', None)
 
+    # Expect checkout to be submitted via POST from the cart form which
+    # includes customer name and phone inputs. If not POST, redirect back.
+    if request.method != 'POST':
+        messages.warning(request, 'Método inválido para checkout')
+        return redirect('shop:cart')
+
+    # Read customer-provided fields from the cart form
+    nombreApellido = (request.POST.get('nombreApellido') or request.POST.get('nombre_apellido') or '').strip()
+    telefono = (request.POST.get('telefono') or request.POST.get('telefono_contacto') or '').strip()
+
+    # Basic validation: require name and phone
+    if not nombreApellido:
+        messages.error(request, 'Por favor ingresa tu nombre y apellido')
+        return redirect('shop:cart')
+    if not telefono:
+        messages.error(request, 'Por favor ingresa un número de teléfono')
+        return redirect('shop:cart')
+    # Normalize/limit phone length to match model (max_length=8)
+    if len(telefono) > 8:
+        messages.error(request, 'El número de teléfono no debe exceder 8 dígitos')
+        return redirect('shop:cart')
+
     # Try to map Django user to the local AppUser (by email first, then username).
     app_user = None
     try:
@@ -107,7 +129,15 @@ def checkout(request):
         app_user = None
 
     # Create order and store the username and link the local user (to satisfy DB FK constraint)
-    order = Order.objects.create(user=app_user, username=username, status='PENDING', total=0)
+    # Also save customer's full name and phone captured from the cart form.
+    order = Order.objects.create(
+        user=app_user,
+        username=username,
+        status='PENDING',
+        total=0,
+        nombreApellido=nombreApellido,
+        telefono=telefono,
+    )
     total = 0
     for pid, qty in cart.items():
         try:
@@ -130,8 +160,8 @@ def order_list(request):
         return redirect('Tienda:login')
 
     username = getattr(request.user, 'username', None)
-    orders = Order.objects.filter(username=username).order_by('-created_at')
-    return render(request, 'App/orders.html', {'orders': orders})
+    orders = Order.objects.filter(username=username).order_by('created_at')
+    return render(request, 'App/ordersClient.html', {'orders': orders})
 
 
 def order_detail(request, id):
@@ -144,7 +174,7 @@ def order_detail(request, id):
         order = Order.objects.get(id=id, username=username)
     except Order.DoesNotExist:
         messages.error(request, 'Pedido no encontrado')
-        return redirect('shop:order_list')
+        return redirect('shop:order_listClient')
     # Build a list of items with product info (name, price, quantity, line_total)
     items = []
     for it in order.items.select_related('product').all():
@@ -157,4 +187,4 @@ def order_detail(request, id):
                 'quantity': it.quantity,
                 'line_total': it.line_total(),
             })
-    return render(request, 'App/order_detail.html', {'order': order, 'items': items})
+    return render(request, 'App/order_detailClient.html', {'order': order, 'items': items})

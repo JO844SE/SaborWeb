@@ -435,3 +435,44 @@ def login(request):
 def logout(request):
     request.session.flush()
     return redirect('Tienda:home')
+
+@login_required_custom()
+def listOrders(request):
+    orders = Order.objects.all().order_by('created_at')
+    return render(request, 'App/orders.html', {'orders': orders})
+
+@login_required_custom()
+def order_detail(request, id):
+    try:
+        order = Order.objects.get(id=id)
+    except Order.DoesNotExist:
+        messages.error(request, 'Pedido no encontrado')
+        return redirect('shop:order_list')
+    # Build a list of items with product info (name, price, quantity, line_total)
+    items = []
+    for it in order.items.select_related('product').all():
+        prod = getattr(it, 'product', None)
+        if prod:
+            items.append({
+                'product_id': prod.id,
+                'name': prod.name,
+                'price': it.price,
+                'quantity': it.quantity,
+                'line_total': it.line_total(),
+            })
+    return render(request, 'App/order_detail.html', {'order': order, 'items': items})
+
+def selectOrder(request, id):
+    order = Order.objects.get(id=id)
+    return render(request, 'App/editarOrder.html', {'order': order})
+
+def editarStatusOrder(request):
+    if request.method == 'POST':
+        id = request.POST.get('orderId')
+        status = request.POST.get('status')
+
+        order = Order.objects.get(id=id)
+        order.status = status
+        order.save()
+        return redirect('home:listOrdenes')
+    return redirect('home:listOrdenes')

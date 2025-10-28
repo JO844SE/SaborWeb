@@ -74,7 +74,8 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
     total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     username = models.CharField(max_length=150, null=True, blank=True)
-    address = models.TextField(blank=True, null=True)
+    nombreApellido = models.CharField(max_length=100, null=True)
+    telefono = models.CharField(max_length=8, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

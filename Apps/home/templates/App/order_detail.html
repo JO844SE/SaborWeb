@@ -1,0 +1,57 @@
+{% extends 'App/base.html' %}
+{% block content %}
+  <div class="container mt-4">
+    <h1 class="mt-4">Detalle del pedido</h1>
+    <div class="card mb-4">
+      <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        Detalle
+      </div>
+      <div class="container mt-4">
+        <strong>Nombre Cliente:</strong>
+        <span>{{ order.nombreApellido }}</span>
+        <br />
+        <strong>Telefono:</strong>
+        <span>{{ order.telefono }}</span>
+        <br />
+        <strong>Estado:</strong>
+        <span class="badge 
+                    {% if order.status == 'PENDING' %}bg-warning{% endif %}
+                    {% if order.status == 'PROCESSING' %}bg-info{% endif %}
+                    {% if order.status == 'READY' %}bg-success{% endif %}
+                    {% if order.status == 'DELIVERED' %}bg-secondary{% endif %}">{{ order.status }}</span>
+        <br />
+        <br />
+        <h2>Productos</h2>
+        <br />
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4">No hay productos en este pedido.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <p>
+          <strong>Total: {{ order.total }}</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

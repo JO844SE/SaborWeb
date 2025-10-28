@@ -1,0 +1,30 @@
+{% extends 'App/base.html' %}
+{% block content %}
+ <h1 class="mt-4">Editar Categoría</h1>
+  <div class="mb-3 py-3">
+    <div class="body show border p-4 rounded-3 shadow-sm border-primary">
+      <form method="POST" action="{% url 'home:editarStatusOrder' %}">
+        {% csrf_token %}
+         <div class="mb-3">
+              <input type="hidden" class="form-control" id="orderId" name="orderId" value="{{ order.id }}" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="status" class="form-label">Estado del Pedido</label>
+              <select class="form-select" id="status" name="status">
+                <option value="PENDING" {% if order.status == "PENDING" %}selected{% endif %}>PENDING</option>
+                <option value="PROCESSING" {% if order.status == "PROCESSING" %}selected{% endif %}>PROCESSING</option>
+                <option value="READY" {% if order.status == "READY" %}selected{% endif %}>READY</option>
+                <option value="DELIVERED" {% if order.status == "DELIVERED" %}selected{% endif %}>DELIVERED</option>
+              </select>
+            </div>
+
+        <!-- Botones -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button type="button" class="btn btn-outline-secondary" onclick="history.back()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+        
+{% endblock %}

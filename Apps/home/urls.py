@@ -40,5 +40,12 @@ urlpatterns = [
    path('listUser/', listUser, name='listUser'),
    path('selectEdicionUser/<int:id>/', selectEdicionUser, name='selectEdicionUser'),
    path('editUser/', editUser, name='editUser'),
-   path('deleteUser/<int:id>/', deleteUser, name='deleteUser')
+   path('deleteUser/<int:id>/', deleteUser, name='deleteUser'),
+
+
+
+   path('listOrders/', listOrders, name='listOrdenes'),
+   path('orders/<int:id>/', order_detail, name='order_detail'),
+   path('selectOrderStatus/<int:id>/', selectOrder, name='selectOrder'),
+   path('updateOrderStatus/', editarStatusOrder, name='editarStatusOrder'),
 ]
