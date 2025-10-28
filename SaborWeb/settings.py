@@ -24,8 +24,8 @@ SECRET_KEY = 'django-insecure-&@sq)8hz*m-*s=t3*i#2-o9#^ynhlua@)$8z_-ki6x^-yhbhsi
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-#GLOBAL_IP = '192.168.2.106'
-#GLOBAL_HOST = '300'
+#GLOBAL_IP = '192.168.0.109'
+#GLOBAL_HOST = '3000'
 ALLOWED_HOSTS = []
 
 
@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'SaborWeb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sabor_we',
+        'NAME': 'sabor_web',
         'USER': 'root',
         'PASSWORD': 'JoseYes#2025',
         'HOST': 'localhost',
