@@ -57,6 +57,10 @@
               {% endfor %}
             </tbody>
           </table>
+          <div>
+            <a href="{% url 'Tienda:home' %}" class="btn btn-primary"><i class="fas fa-store"></i> Ir a la tienda</a>
+            <a href="{% url 'shop:cart' %}" class="btn btn-secondary"><i class="fas fa-shopping-cart"></i> Ir al carrito</a>
+          </div>
         </div>
       </div>
     </div>

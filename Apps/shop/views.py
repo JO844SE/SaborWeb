@@ -1,42 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth import get_user_model
 from Apps.home.models import Product, Order, OrderItem, User as AppUser
-from .models import Cart, CartItem
-
-User = get_user_model()
 
 
 def _get_cart(request):
     return request.session.get('cart', {})
 
-
 def _save_cart(request, cart):
     request.session['cart'] = cart
-    request.session.modified = True
-    # Persist to DB for authenticated django user
-    try:
-        if request.user.is_authenticated:
-            save_session_cart_to_db(request.user, cart)
-    except Exception:
-        pass
-
-
-def save_session_cart_to_db(user, cart):
-    # cart: dict of str(product_id)->qty
-    if not cart:
-        # remove existing cart if empty
-        Cart.objects.filter(user=user).delete()
-        return
-    cart_obj, _ = Cart.objects.get_or_create(user=user)
-    # clear existing items
-    cart_obj.items.all().delete()
-    for pid, qty in cart.items():
-        try:
-            prod = Product.objects.get(id=pid)
-            CartItem.objects.create(cart=cart_obj, product=prod, quantity=qty, price=prod.price)
-        except Product.DoesNotExist:
-            continue
 
 
 def cart_view(request):
@@ -74,11 +45,14 @@ def cart_remove(request, product_id):
     if key in cart:
         del cart[key]
         _save_cart(request, cart)
+        request.session.modified = True
+        messages.success(request, 'Producto eliminado del carrito')
+    else:
+        messages.warning(request, 'El producto no estaba en el carrito')
     return redirect('shop:cart')
 
 
 def checkout(request):
-    # Require Django-authenticated user for checkout and save their username on the order
     if not request.user.is_authenticated:
         messages.warning(request, 'Debes iniciar sesión para realizar el checkout')
         return redirect('Tienda:login')
@@ -88,20 +62,15 @@ def checkout(request):
         messages.error(request, 'El carrito está vacío')
         return redirect('shop:cart')
 
-    username = getattr(request.user, 'username', None)
-    email = getattr(request.user, 'email', None)
-
-    # Expect checkout to be submitted via POST from the cart form which
-    # includes customer name and phone inputs. If not POST, redirect back.
     if request.method != 'POST':
         messages.warning(request, 'Método inválido para checkout')
         return redirect('shop:cart')
 
-    # Read customer-provided fields from the cart form
-    nombreApellido = (request.POST.get('nombreApellido') or request.POST.get('nombre_apellido') or '').strip()
-    telefono = (request.POST.get('telefono') or request.POST.get('telefono_contacto') or '').strip()
+    # Leer los campos proporcionados por el cliente desde el formulario del carrito
+    nombreApellido = (request.POST.get('nombreApellido') or '').strip()
+    telefono = (request.POST.get('telefono') or '').strip()
 
-    # Basic validation: require name and phone
+    # Validación básica: requerir nombre y teléfono
     if not nombreApellido:
         messages.error(request, 'Por favor ingresa tu nombre y apellido')
         return redirect('shop:cart')
@@ -113,31 +82,16 @@ def checkout(request):
         messages.error(request, 'El número de teléfono no debe exceder 8 dígitos')
         return redirect('shop:cart')
 
-    # Try to map Django user to the local AppUser (by email first, then username).
-    app_user = None
-    try:
-        if email:
-            app_user = AppUser.objects.filter(email=email).first()
-        if not app_user and username:
-            app_user = AppUser.objects.filter(username=username).first()
-        # If no AppUser found, create one so FK constraint is satisfied
-        if not app_user:
-            from uuid import uuid4
-            safe_email = email if email else f'auto_{uuid4().hex}@local'
-            app_user = AppUser.objects.create(username=username or f'user_{request.user.id}', email=safe_email, password='')
-    except Exception:
-        app_user = None
-
-    # Create order and store the username and link the local user (to satisfy DB FK constraint)
-    # Also save customer's full name and phone captured from the cart form.
+    app_user = AppUser.objects.get(pk=request.user.pk)
     order = Order.objects.create(
         user=app_user,
-        username=username,
+        username=request.user.username,
         status='PENDING',
         total=0,
         nombreApellido=nombreApellido,
         telefono=telefono,
     )
+
     total = 0
     for pid, qty in cart.items():
         try:
@@ -146,12 +100,14 @@ def checkout(request):
             total += item.line_total()
         except Product.DoesNotExist:
             continue
+
     order.total = total
     order.save()
+
     request.session['cart'] = {}
     request.session.modified = True
-    messages.success(request, f'Pedido #{order.id} creado correctamente')
-    return redirect('Tienda:home')
+    
+    return redirect('shop:order_list_client')
 
 
 def order_list(request):
@@ -188,3 +144,41 @@ def order_detail(request, id):
                 'line_total': it.line_total(),
             })
     return render(request, 'App/order_detailClient.html', {'order': order, 'items': items})
+
+
+
+
+def cart_sumar(request, product_id):
+    # For the shop, prefer Django auth user (request.user)
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Debes iniciar sesión para agregar al carrito')
+        return redirect('Tienda:login')
+
+    cart = _get_cart(request)
+    key = str(product_id)
+    cart[key] = cart.get(key, 0) + 1
+    _save_cart(request, cart)
+    messages.success(request, 'Producto agregado al carrito')
+    return redirect('shop:cart')
+
+
+def cart_restar(request, product_id):
+    # For the shop, prefer Django auth user (request.user)
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Debes iniciar sesión para agregar al carrito')
+        return redirect('Tienda:login')
+
+    cart = _get_cart(request)
+    key = str(product_id)
+    qty = cart.get(key, 0)
+
+    if qty <= 1:
+        return redirect('shop:cart')
+    
+    qty -= 1
+    cart[key] = qty
+
+    _save_cart(request, cart)
+    request.session.modified = True
+    messages.success(request, 'Producto restado del carrito')
+    return redirect('shop:cart')

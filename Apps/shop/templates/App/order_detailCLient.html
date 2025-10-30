@@ -17,7 +17,7 @@
           <i class="fas fa-table me-1"></i>
           Detalle
         </div>
-        <div class="container mt-4">
+        <div class="container mt-4 py-4">
           <strong>Nombre Cliente:</strong>
           <span>{{ order.nombreApellido }}</span>
           <br />
@@ -61,6 +61,10 @@
           <p>
             <strong>Total: {{ order.total }}</strong>
           </p>
+          <div>
+            <a href="{% url 'shop:order_list_client' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Regresar</a>
+            <a href="{% url 'Tienda:home' %}" class="btn btn-primary"><i class="fas fa-shopping-cart"></i> Ir a la tienda</a>
+          </div>
         </div>
       </div>
     </div>
