@@ -8,7 +8,10 @@ import bcrypt
 
 # Utility function to clear existing messages
 def clear_messages(request):
-    list(messages.get_messages(request))
+    storage = messages.get_messages(request)
+    for _ in storage:
+        pass
+
 
 #-------------------------------
 # Sistema de Autenticación Personalizado

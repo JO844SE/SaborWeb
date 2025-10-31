@@ -4,7 +4,9 @@ from Apps.home.models import Product, Order, OrderItem, User as AppUser
 
 # Utility function to clear existing messages
 def clear_messages(request):
-    list(messages.get_messages(request))
+    storage = messages.get_messages(request)
+    for _ in storage:
+        pass
 
 def _get_cart(request):
     return request.session.get('cart', {})
@@ -44,7 +46,6 @@ def cart_add(request, product_id):
     cart[key] = cart.get(key, 0) + 1
     _save_cart(request, cart)
     clear_messages(request)
-    messages.success(request, 'Producto agregado al carrito')
     return redirect('Tienda:home')
 
 
