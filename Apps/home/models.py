@@ -1,7 +1,6 @@
 
 from django.db import models
 from django.core.exceptions import ValidationError
-# Create your models here.
 
 class User(models.Model):
     id = models.AutoField(primary_key=True)  # PK autoincremental
@@ -94,7 +93,6 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
-        # Use English table name to match existing DB if necessary
         db_table = 'Pedido_Items'
 
     def __str__(self):

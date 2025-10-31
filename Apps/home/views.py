@@ -1,9 +1,14 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from functools import wraps
 from .models import *
 import bcrypt
+
+
+
+# Utility function to clear existing messages
+def clear_messages(request):
+    list(messages.get_messages(request))
 
 #-------------------------------
 # Sistema de Autenticación Personalizado
@@ -26,8 +31,7 @@ def login_required_custom(login_url='/login/'):
             if is_authenticated(request):
                 return view_func(request, *args, **kwargs)
             else:
-                storage = messages.get_messages(request)
-                storage.used = True
+                clear_messages(request)
                 messages.warning(request, "Debes iniciar sesión para acceder a esta página")
                 return redirect(login_url)
         return _wrapped_view
@@ -49,20 +53,21 @@ def get_authenticated_user(request):
     return None
 
 
-# Create your views here.
 
 
-def contact(request):
-    return render(request, 'contact.html')
+
 
 
 @login_required_custom()
 def dashboard(request):
     categoria = Category.objects.count()
     producto = Product.objects.count()
+    orders = Order.objects.filter(status='PENDING').count()
+
     return render(request, 'App/dashboard.html', {
         'categoria': categoria, 
         'producto': producto,
+        'orders': orders, 
     })
 #-------------------------------
 # Vistas para productos
@@ -80,6 +85,7 @@ def productDelete(request, id):
             producto.delete()
             return redirect('home:productos')
         except Exception as e:
+            clear_messages(request)
             messages.error(request, f'Error al eliminar el producto: {str(e)}')
             return redirect('home:productos')
     return render(request, 'App/confirm_delete_product.html', {'producto': producto})
@@ -112,12 +118,14 @@ def registrarProducto(request):
             # Validar precio
             precio_decimal = float(precio)
             if precio_decimal <= 0:
+                clear_messages(request)
                 messages.error(request, "El precio debe ser mayor que 0")
 
             # Validar que la categoría existe
             categoria = Category.objects.get(id=categoria_id)
 
             if Product.objects.filter(name=nombre).exists():
+                clear_messages(request)
                 messages.error(request, f"Ya existe un producto -> ({nombre}) selecciona otro nombre")
                 return render(request, 'App/registrarProducto.html', {
                     'categorias': categorias,
@@ -196,6 +204,7 @@ def editarProducto(request):
             # Validar precio
             precio_decimal = float(precio)
             if precio_decimal <= 0:
+                clear_messages(request)
                 raise ValueError("El precio debe ser mayor que 0")
 
             # Validar que la categoría existe
@@ -206,6 +215,7 @@ def editarProducto(request):
                 raise ValueError("La URL de la imagen debe comenzar con http:// o https://")
 
             if Product.objects.filter(name=nombre).exclude(id=id).exists():
+                clear_messages(request)
                 messages.error(request, f"Ya existe un producto -> ({nombre}) selecciona otro nombre")
                 producto = Product.objects.get(id=id)  # Obtener el producto actual
                 return render(request, 'App/editarProducto.html', {'producto': producto, 'categorias': categorias})
@@ -226,12 +236,15 @@ def editarProducto(request):
             messages.error(request, str(e))
             return redirect('home:selectEdicionProducto', id=id)
         except Category.DoesNotExist:
+            clear_messages(request)
             messages.error(request, 'La categoría seleccionada no existe.')
             return redirect('home:selectEdicionProducto', id=id)
         except Product.DoesNotExist:
+            clear_messages(request)
             messages.error(request, 'El producto no existe.')
             return redirect('home:productos')
         except Exception as e:
+            clear_messages(request)
             messages.error(request, f'Error al actualizar el producto: {str(e)}')
             return redirect('home:selectEdicionProducto', id=id)
 
@@ -280,6 +293,7 @@ def editarCategoria(request):
         descripcion = request.POST.get('descripcion')
 
         if Category.objects.filter(name=nombre).exclude(id=id).exists():
+            clear_messages(request)
             messages.error(request, f'Ya existe una categoría -> ({nombre}) selecciona otro nombre')
             categoria = Category.objects.get(id=id)  # Obtener la categoría actual
             return render(request, 'App/editarCategoria.html', {'categoria': categoria})
@@ -299,6 +313,7 @@ def categoriaDelete(request, id):
             categoria.delete()
             return redirect('home:categoriaList')
         except Exception as e:
+            clear_messages(request)
             messages.error(request, f'No se puede eliminar esta categoría porque está relacionada con otros elementos: {str(e)}')
             return redirect('home:categoriaList')
     return render(request, 'App/confirm_delete_category.html', {'categoria': categoria})
@@ -324,6 +339,7 @@ def registrarusuario(request):
         if User.objects.filter(email=correo).exists():
             storage = messages.get_messages(request)
             storage.used = True
+            clear_messages(request)
             messages.error(request, f'Ya existe un usuario con este correo -> ({correo}) selecciona otro correo')
             return render(request, 'App/registrarUsuarios.html', {
                 'nombre': nombre,
@@ -366,6 +382,7 @@ def editUser(request):
         hashed = bcrypt.hashpw(passwordHash, salt)
 
         if User.objects.filter(email=correo).exclude(id=id).exists():
+            clear_messages(request)
             messages.error(request, f'Ya existe un usuario con este correo -> ({correo}) selecciona otro correo')
             user = User.objects.get(id=id)  # Obtener el usuario actual
             return render(request, 'App/editarusuarios.html', {'usuario': user, 'password': password})
@@ -388,6 +405,7 @@ def deleteUser(request, id):
             id.delete()
             return redirect('home:listUser')
         except Exception as e:
+            clear_messages(request)
             messages.error(request, f'Error al eliminar el usuario: {str(e)}')
             return redirect('home:listUser')
     return render(request, 'App/confirm_delete_user.html', {'usuario': id})
@@ -422,10 +440,13 @@ def login(request):
                     request.session['user_id'] = usuario.id
                     return redirect('home:dashboard')
                 else:
+                    clear_messages(request)
                     messages.error(request, 'Email o contraseña incorrectos')
             else:
+                clear_messages(request)
                 messages.error(request, 'Email o contraseña incorrectos')
         except Exception as e:
+            clear_messages(request)
             messages.error(request, 'Error en el sistema de autenticación')
     
     return render(request, 'login.html')
@@ -438,7 +459,7 @@ def logout(request):
 
 @login_required_custom()
 def listOrders(request):
-    orders = Order.objects.all().order_by('created_at')
+    orders = Order.objects.all().order_by('-created_at')
     return render(request, 'App/orders.html', {'orders': orders})
 
 @login_required_custom()
@@ -462,10 +483,12 @@ def order_detail(request, id):
             })
     return render(request, 'App/order_detail.html', {'order': order, 'items': items})
 
+@login_required_custom()
 def selectOrder(request, id):
     order = Order.objects.get(id=id)
     return render(request, 'App/editarOrder.html', {'order': order})
 
+@login_required_custom()
 def editarStatusOrder(request):
     if request.method == 'POST':
         id = request.POST.get('orderId')
@@ -476,3 +499,17 @@ def editarStatusOrder(request):
         order.save()
         return redirect('home:listOrdenes')
     return redirect('home:listOrdenes')
+
+
+@login_required_custom()
+def deleteOrder(request, id):
+    order = Order.objects.get(id=id)
+    if request.method == 'POST':
+        try:
+            order.delete()
+            return redirect('home:listOrdenes')
+        except Exception as e:
+            clear_messages(request)
+            messages.error(request, f'Error al eliminar el pedido: {str(e)}')
+            return redirect('home:listOrdenes')
+    return render(request, 'App/confirm_delete_order.html', {'order': order})

@@ -4,7 +4,6 @@ from .views import *
 app_name = 'home'
 
 urlpatterns = [
-   path('contact/', contact, name='contact'),
    path('adminLogin/', login, name='login'),
    path('logout/', logout, name='logout'),
    path('dashboard/', dashboard, name='dashboard'),
@@ -48,4 +47,5 @@ urlpatterns = [
    path('orders/<int:id>/', order_detail, name='order_detail'),
    path('selectOrderStatus/<int:id>/', selectOrder, name='selectOrder'),
    path('updateOrderStatus/', editarStatusOrder, name='editarStatusOrder'),
+   path('deleteOrder/<int:id>/', deleteOrder, name='deleteOrder'),
 ]

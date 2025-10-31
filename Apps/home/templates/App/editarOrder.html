@@ -1,6 +1,6 @@
 {% extends 'App/base.html' %}
 {% block content %}
- <h1 class="mt-4">Editar Categoría</h1>
+ <h1 class="mt-4">Editar Status de orden</h1>
   <div class="mb-3 py-3">
     <div class="body show border p-4 rounded-3 shadow-sm border-primary">
       <form method="POST" action="{% url 'home:editarStatusOrder' %}">
@@ -11,10 +11,10 @@
             <div class="mb-3">
               <label for="status" class="form-label">Estado del Pedido</label>
               <select class="form-select" id="status" name="status">
-                <option value="PENDING" {% if order.status == "PENDING" %}selected{% endif %}>PENDING</option>
-                <option value="PROCESSING" {% if order.status == "PROCESSING" %}selected{% endif %}>PROCESSING</option>
-                <option value="READY" {% if order.status == "READY" %}selected{% endif %}>READY</option>
-                <option value="DELIVERED" {% if order.status == "DELIVERED" %}selected{% endif %}>DELIVERED</option>
+                <option value="PENDING" {% if order.status == "PENDING" %}selected{% endif %}>Pendiente</option>
+                <option value="PROCESSING" {% if order.status == "PROCESSING" %}selected{% endif %}>En Proceso</option>
+                <option value="READY" {% if order.status == "READY" %}selected{% endif %}>Listo</option>
+                <option value="DELIVERED" {% if order.status == "DELIVERED" %}selected{% endif %}>Entregado</option>
               </select>
             </div>
 

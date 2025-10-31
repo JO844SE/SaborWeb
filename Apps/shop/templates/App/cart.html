@@ -1,26 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    {% load static %}
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" type="text/css" />
-    <title>Orders</title>
-  </head>
-  <body>
-    <div class="container mt-4">
-      <h1 class="mt-4">Mis Orders</h1>
+{% extends 'index.html' %}
+{% block content %}
+<div class="container mt-4">
+      <h1 class="mt-4">Crear Orden</h1>
       <div class="card mb-4">
         <div class="card-header">
           <i class="fas fa-table me-1"></i>
-          Mis Orders
+          Nueva Orden
         </div>
         <div class="row">
           <div class="col-md-8">
             <div class="card-body">
               <h2>Carrito</h2>
               {% if items %}
-                <table class="table">
+                <table class="table responsive tableCart" id="datatablesSimple">
                   <thead>
                     <tr>
                       <th>Imagen</th>
@@ -91,7 +83,4 @@
         </div>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-  </body>
-</html>
+{% endblock %}

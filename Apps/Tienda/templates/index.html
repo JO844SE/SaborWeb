@@ -1,220 +1,200 @@
 <!DOCTYPE html>
 <html lang="zxx">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="description" content="Yoga Studio Template">
-    <meta name="keywords" content="Yoga, unica, creative, html">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Yoga Studio Template" />
+    <meta name="keywords" content="Yoga, unica, creative, html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Yummy | Template</title>
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet">
     {% load static %}
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet" />
+
     <!-- Css Styles -->
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/nice-select.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" />
 
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'css/nice-select.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
-    
     <style>
-        .navbar-toggler {
-            background-color: #0cd30c59; /* Cambia el color de fondo */
+      .navbar-toggler {
+        background-color: #0cd30c59;
+      }
+      
+      .custom-nav {
+        width: 80%; /* ancho máximo en pantallas grandes */
+        max-width: 1000px; /* no crecerá más de 1000px */
+        margin: 20px auto; /* centrado horizontal */
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+      
+      /* En pantallas pequeñas, la barra ocupa casi todo el ancho */
+      @media (max-width: 768px) {
+        .custom-nav {
+          width: 95%;
+          margin: 10px auto;
         }
+      }
     </style>
-    
+  </head>
 
-</head>
-
-<body>
-    <div class="container">
-        
-    </div>
-    <!-- Page Preloder -->
+  <body>
+    <!-- Page Preloader -->
     <div id="preloder">
-        <div class="loader"></div>
+      <div class="loader"></div>
     </div>
 
     <!-- Header Section Begin -->
     <header class="header-section">
-        <div class="container">
-            <div class="logo">
-                <a href="./index.html"><img src="{% static 'img/logo.png'%}" alt=""></a>
-            </div>
-
-            <div class="d-flex justify-content-end" >
-                {% if user.is_authenticated %}
-                    <form  method="post">
-                    {% csrf_token %}
-                        <h5>Hola! {{ user.username }}</h5>
-                        <button class="btn btn-danger" type="submit" formaction="{% url 'Tienda:logout' %}"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
-                     </form>
-                {% endif %}
-            </div>
-
-
-<nav class="navbar navbar-expand-lg bg-success">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#"></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon" ></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="{% url 'Tienda:home' %}"> <i class="fas fa-store"></i> Tienda</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'home:contact' %}"> <i class="fas fa-envelope"></i> Contacto</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'Tienda:login' %}"> <i class="fas fa-sign-in-alt"></i> Login</a>
-        </li>
-        {% if user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'shop:cart' %}"><i class="fas fa-shopping-cart"></i> Carrito</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'shop:order_list_client' %}"><i class="fas fa-box"></i> Pedidos</a>
-        </li>
-        {% endif %}
-      </ul>
-    </div>
-  </div>
-</nav>
-
-
-
-
-            
+      <div class="container">
+        <div class="logo">
+          <a href="./index.html"><img src="{% static 'img/logo.png' %}" alt="" /></a>
         </div>
+        <div class="d-flex justify-content-end">
+          {% if user.is_authenticated %}
+            <form method="post">
+              {% csrf_token %}
+              <h5>Hola! {{ user.username }}</h5>
+              <button class="btn btn-danger" type="submit" formaction="{% url 'Tienda:logout' %}"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+
+      <nav class="navbar navbar-expand-lg bg-success custom-nav mx-auto">
+        <div class="container-fluid justify-content-center">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+
+          <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav text-center">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'Tienda:home' %}"><i class="fas fa-store"></i> Tienda</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'Tienda:contact' %}"><i class="fas fa-envelope"></i> Contacto</a>
+              </li>
+
+              {% if not user.is_authenticated %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'Tienda:login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                </li>
+              {% endif %}
+
+              {% if user.is_authenticated %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'shop:cart' %}"><i class="fas fa-shopping-cart"></i> Carrito 
+                    <span id="cart-count" class="badge bg-danger">{{ total_quantity }}</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'shop:order_list_client' %}"><i class="fas fa-box"></i> Pedidos</a>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </nav>
     </header>
-    <!-- Header End -->
-       
-         <!-- Page Top Recipe Section Begin -->
-    <section class="page-top-recipe">
-        <div class="container">
-        {% block content %}
-    
-       <section class="empresa-info my-5">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-md-4 mb-4">
+
+    <div class="container py-4">
+      {% block content %}
+        <section class="empresa-info my-5">
+          <div class="container">
+            <div class="row text-center">
+              <div class="col-md-4 mb-4">
                 <h3>Misión</h3>
-                <p>
-                    Nuestra misión es ofrecer productos y servicios de alta calidad que superen las expectativas de nuestros clientes, contribuyendo al desarrollo sostenible y al bienestar de la comunidad.
-                </p>
-            </div>
-            <div class="col-md-4 mb-4">
+                <p>Nuestra misión es ofrecer productos y servicios de alta calidad que superen las expectativas de nuestros clientes.</p>
+              </div>
+              <div class="col-md-4 mb-4">
                 <h3>Visión</h3>
-                <p>
-                    Ser una empresa líder en el sector, reconocida por su innovación, excelencia y compromiso con la satisfacción del cliente y el cuidado del medio ambiente.
-                </p>
-            </div>
-            <div class="col-md-4 mb-4">
+                <p>Ser una empresa líder en el sector, reconocida por su innovación y compromiso con la satisfacción del cliente.</p>
+              </div>
+              <div class="col-md-4 mb-4">
                 <h3>Objetivos</h3>
                 <ul class="text-start">
-                    <li>Brindar un servicio al cliente excepcional.</li>
-                    <li>Fomentar la mejora continua e innovación.</li>
-                    <li>Promover el desarrollo profesional de nuestro equipo.</li>
-                    <li>Contribuir positivamente a la sociedad.</li>
+                  <li>Brindar un servicio al cliente excepcional.</li>
+                  <li>Fomentar la mejora continua e innovación.</li>
+                  <li>Promover el desarrollo profesional de nuestro equipo.</li>
+                  <li>Contribuir positivamente a la sociedad.</li>
                 </ul>
+              </div>
             </div>
-        </div>
-    </div>
-</section> 
-        
-    <!-- Categories Filter Section Begin -->
-    <div class="categories-filter-section spad">
-        <div class="container">
+          </div>
+        </section>
+
+        <!-- Categories Filter Section Begin -->
+        <div class="categories-filter-section spad">
+          <div class="container">
             <div class="row">
-                <div class="col-lg-12 text-center">
-                    <div class="filter-item">
-                        <ul>
-                            {% for categori in categoria %}
-                                <li data-filter=".{{ categori.name|slugify }}">{{ categori.name}}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+              <div class="col-lg-12 text-center">
+                <div class="filter-item">
+                  <ul>
+                    {% for categori in categoria %}
+                      <li data-filter=".{{ categori.name|slugify }}">{{ categori.name }}</li>
+                    {% endfor %}
+                  </ul>
                 </div>
+              </div>
             </div>
-                        <div class="cf-filter" id="category-filter">
-                {% for prod in producto %}
-                    <div class="cf-item mix all {{ prod.category.name|slugify }}">
-                        <div class="cf-item-pic">
-                            <img src="{{ prod.image }}" alt="{{ prod.name }}" class="img-fluid" onerror="this.src='{% static 'img/default-product.svg' %}'">
-                        </div>
-                        <div class="cf-item-text">
-                            <h4>{{ prod.name }}</h4>
-                            <h6>{{ prod.description}}</h6>
-                            <h5 style="color: #00be0aff;">{{ prod.price }}</h5>
-                            {% if user.is_authenticated %}
-                            <a href="{% url 'shop:cart_add' prod.id %}" class="btn btn-secondary"><i class="fas fa-shopping-cart"></i> Comprar</a>
-                            {% else %}
-                            <a href="{% url 'Tienda:login' %}" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Inicia Sesion y compra</a>
-                            {% endif %}
-                        </div>
 
-
-                    </div>
-                {% endfor %}
+            <div class="cf-filter" id="category-filter">
+              {% for prod in producto %}
+                <div class="cf-item mix all {{ prod.category.name|slugify }}">
+                  <div class="cf-item-pic">
+                    <img src="{{ prod.image }}" alt="{{ prod.name }}" class="img-fluid" onerror="this.src='{% static 'img/default-product.svg' %}'" />
+                  </div>
+                  <div class="cf-item-text">
+                    <h4>{{ prod.name }}</h4>
+                    <h6>{{ prod.description }}</h6>
+                    <h5 style="color: #00be0aff;">{{ prod.price }}</h5>
+                    {% if user.is_authenticated %}
+                      <a href="{% url 'shop:cart_add' prod.id %}" class="btn btn-success"><i class="fas fa-shopping-cart"></i> Agregar al Carrito</a>
+                    {% else %}
+                      <a href="{% url 'Tienda:login' %}" class="btn btn-danger"><i class="fas fa-sign-in-alt"></i> Inicia Sesión y Comprar</a>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
         </div>
+      {% endblock %}
     </div>
+
     <!-- Categories Filter Section End -->
-
-
 
     <!-- Footer Section Begin -->
     <footer class="footer-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-5">
-                    <div class="fs-left">
-                        <div class="logo">
-                            <a href="./index.html">
-                                <img src="{% static 'img/footer-logo.png'%}" alt="">
-                            </a>
-                        </div>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                            labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo
-                            viverra maecenas accumsan lacus vel facilisis.</p>
-                    </div>
-                </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-5">
+            <div class="fs-left">
+              <div class="logo">
+                <a href="./index.html"><img src="{% static 'img/footer-logo.png' %}" alt="" /></a>
+              </div>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
             </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="copyright-text">
-                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-Copyright &copy;<script>document.write(new Date().getFullYear());</script>
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="copyright-text">
+              Copyright &copy;<script>
+                                document.write(new Date().getFullYear())
+                              </script>
+            </div>
+          </div>
+        </div>
+      </div>
     </footer>
-    <!-- Footer Section End -->
-
-    <!-- Search model -->
-	<div class="search-model">
-		<div class="h-100 d-flex align-items-center justify-content-center">
-			<div class="search-close-switch">+</div>
-			<form class="search-model-form">
-				<input type="text" id="search-input" placeholder="Search here.....">
-			</form>
-		</div>
-	</div>
-	<!-- Search model end -->
-
-
-{% endblock %}
-   
-    
-    <!-- Js Plugins -->
 
     <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
@@ -223,9 +203,11 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script>
     <script src="{% static 'js/mixitup.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/alerts.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
 
-</body>
-
+  </body>
 </html>

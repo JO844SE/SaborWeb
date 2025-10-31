@@ -7,4 +7,5 @@ urlpatterns = [
     path('', home, name='home'),
     path('signup/', SignUpView.as_view(), name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('contact/', contact, name='contact'),
 ]

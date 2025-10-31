@@ -1,6 +1,6 @@
 {% extends 'App/base.html' %}
 {% block content %}
-  <div class="container mt-4">
+  <div class="mt-4">
     <h1 class="mt-4">Detalle del pedido</h1>
     <div class="card mb-4">
       <div class="card-header">
@@ -24,7 +24,7 @@
         <br />
         <h2>Productos</h2>
         <br />
-        <table class="table">
+        <table class="table" id="datatablesSimple">
           <thead>
             <tr>
               <th>#</th>
@@ -51,6 +51,9 @@
         <p>
           <strong>Total: {{ order.total }}</strong>
         </p>
+        <div class="mb-4">
+          <a href="{% url 'home:listOrdenes' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Regresar</a>
+        </div>
       </div>
     </div>
   </div>

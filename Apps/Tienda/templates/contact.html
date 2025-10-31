@@ -1,0 +1,69 @@
+{% extends './index.html' %}
+
+{% block content %}
+{% load static %}
+  <div class="container py-4">
+    <h1><center>Contáctanos</center></h1>
+    <h4>Estamos aquí para ayudarte</h4><br />
+    <h4><strong><i class="fas fa-phone"></i> Teléfono:</strong> +502 0022 4545</h4>
+    <h4><strong><i class="fas fa-envelope"></i> Email:</strong> yummyfoodblog@gmail.com</h4>
+  </div>
+  <div class="map">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1925.8188809124758!2d-91.80623068872654!3d15.123280180226315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x858c2c9c14aa3a7f%3A0xce735c81a39c1e6a!2sACREDICOM%2C%20R.L.!5e0!3m2!1ses!2sgt!4v1761923782304!5m2!1ses!2sgt" height="550" style="border:0;" allowfullscreen=""></iframe>
+    <div class="map-content set-bg" data-setbg="">
+      <div class="contact-addr">
+        <span>Carretera No 25/11</span>
+        <ul>
+          <li>+502 0022 4545</li>
+          <li>yummyfoodblog@gmail.com</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- Map Section End -->
+
+  <!-- Similar Recipe Section Begin -->
+  <section class="similar-recipe spad">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col-md-6">
+          <div class="similar-item">
+            <a href="#"><img src="{% static 'img/cat-feature/small-7.jpg' %}" alt="" /></a>
+            <div class="similar-text">
+              <div class="cat-name">Vegano</div>
+              <h6>Tiramisu italiano con café</h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div class="similar-item">
+            <a href="#"><img src="{% static 'img/cat-feature/small-6.jpg' %}" alt="" /></a>
+            <div class="similar-text">
+              <div class="cat-name">Vegano</div>
+              <h6>Galletas secas con maíz</h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div class="similar-item">
+            <a href="#"><img src="{% static 'img/cat-feature/small-5.jpg' %}" alt="" /></a>
+            <div class="similar-text">
+              <div class="cat-name">Vegano</div>
+              <h6>Espárragos con Lomo de Cerdo y Verduras</h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div class="similar-item">
+            <a href="#"><img src="{% static 'img/cat-feature/small-4.jpg' %}" alt="" /></a>
+            <div class="similar-text">
+              <div class="cat-name">Vegano</div>
+              <h6>Mini sándwiches de salmón ahumado con cebolla</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Similar Recipe Section End -->
+{% endblock %}
